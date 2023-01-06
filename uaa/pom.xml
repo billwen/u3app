@@ -2,15 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>u3app</artifactId>
+        <groupId>com.guludoc.learning</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.guludoc.learning</groupId>
-    <artifactId>u3app</artifactId>
-    <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
-    <modules>
-        <module>uaa</module>
-    </modules>
+    <groupId>com.guludoc.learning.u3app</groupId>
+    <artifactId>uaa</artifactId>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
