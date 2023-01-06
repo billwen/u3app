@@ -1,4 +1,4 @@
-package com.guludoc.learning.uaa;
+package com.guludoc.learning.u3app.uaa;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

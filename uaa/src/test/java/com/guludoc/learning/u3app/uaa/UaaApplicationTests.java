@@ -1,4 +1,4 @@
-package com.guludoc.learning.uaa;
+package com.guludoc.learning.u3app.uaa;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
