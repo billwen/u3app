@@ -1,6 +1,7 @@
 package com.guludoc.learning.u3app.uaa.rest;
 
 import lombok.Data;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,6 +24,7 @@ public class UserResource {
     }
 
     @PostMapping("/greetingwithjson")
+    @ResponseStatus(HttpStatus.CREATED)
     public String makeGreeting(@RequestBody Profile profile) {
         return "Hello " + profile.getGender();
     }

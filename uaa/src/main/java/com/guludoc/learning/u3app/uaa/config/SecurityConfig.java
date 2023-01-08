@@ -12,10 +12,20 @@ public class SecurityConfig  {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http.formLogin(Customizer.withDefaults())
-                .authorizeRequests()
-                .mvcMatchers("/api/greeting").authenticated();
+        http.csrf( csrf -> {
+            csrf.disable();
+        });
 
+        http.httpBasic(basic -> {
+            basic.realmName("MyName");
+        });
+
+//        http.formLogin(Customizer.withDefaults())
+//                .authorizeRequests()
+//                .mvcMatchers("/api/greeting").authenticated();
+
+        http.authorizeRequests()
+                .mvcMatchers("/api/greeting").authenticated();
         return http.build();
     }
 }
