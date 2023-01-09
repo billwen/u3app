@@ -25,11 +25,15 @@ spring:
   application:
     name: uaa
 
-  security:
-    user:
-      name: user
-      password: 12345678
-      roles: USER,ADMIN
+#  security:
+#    user:
+#      name: user
+#      password: 12345678
+#      roles: USER,ADMIN
 
   thymeleaf:
     cache: false
+
+  h2:
+    console:
+      enabled: true
