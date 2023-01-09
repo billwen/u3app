@@ -1,11 +1,17 @@
 package com.guludoc.learning.u3app.uaa.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,7 +22,12 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
@@ -27,6 +38,7 @@ import static org.springframework.http.HttpHeaders.SET_COOKIE;
  * Spring Security without the WebSecurityConfigurerAdapter
  * https://spring.io/blog/2022/02/21/spring-security-without-the-websecurityconfigureradapte
  */
+@Slf4j
 @Configuration
 @EnableWebSecurity(debug = true)
 public class SecurityConfig {
@@ -48,7 +60,11 @@ public class SecurityConfig {
                 authz -> authz.mvcMatchers("/login", "/error").permitAll()
                         .anyRequest().authenticated());
 
-        http.formLogin(form -> form.loginPage("/login"));
+        http.formLogin(form -> {
+            form.loginPage("/login")
+                    .successHandler(this::authenticationSuccessHandler)
+                    .failureHandler(this::authenticationFailureHandler);
+        });
 
         // CSRF Attack
         http.csrf(csrf -> {
@@ -57,8 +73,7 @@ public class SecurityConfig {
 
         // Remember me
         http.rememberMe(rememberMe -> {
-            rememberMe.tokenRepository(new JdbcTokenRepositoryImpl())
-                    .tokenValiditySeconds(30*24*3600);
+            rememberMe.tokenValiditySeconds(30*24*3600);
         });
 
         // Logout
@@ -81,6 +96,10 @@ public class SecurityConfig {
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 
+    /**
+     * Password encoder
+     * @return
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -100,6 +119,40 @@ public class SecurityConfig {
                 .build();
 
         return new InMemoryUserDetailsManager(user);
+    }
+
+    /**
+     * Authentication Success handler
+     * @param request
+     * @param response
+     * @param authentication
+     * @throws IOException
+     * @throws ServletException
+     */
+    private void authenticationSuccessHandler(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+        ObjectMapper om = new ObjectMapper();
+        response.setStatus(HttpStatus.OK.value());
+        response.getWriter().println(om.writeValueAsString(authentication));
+        log.debug("认证成功");
+    }
+
+    /**
+     * Authentication failure handler
+     * @param request
+     * @param response
+     * @param exception
+     * @throws IOException
+     * @throws ServletException
+     */
+    private void authenticationFailureHandler(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+        ObjectMapper om = new ObjectMapper();
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
+
+        var errs = Map.of("title", "认证失败", "details", exception.getLocalizedMessage());
+
+        response.getWriter().println(om.writeValueAsString(errs));
     }
 
     /**
