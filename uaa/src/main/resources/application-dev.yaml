@@ -20,3 +20,13 @@ management:
 
 server:
   port: 8080
+
+spring:
+  application:
+    name: uaa
+
+  security:
+    user:
+      name: user
+      password: 12345678
+      roles: USER,ADMIN
