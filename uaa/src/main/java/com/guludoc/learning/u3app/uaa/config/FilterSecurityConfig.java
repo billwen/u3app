@@ -19,9 +19,7 @@ public class FilterSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http.authorizeRequests(req -> req.antMatchers("/api/**").authenticated())
-                .formLogin(form -> form.disable())
-                .csrf(csrf -> csrf.disable())
-                .httpBasic(Customizer.withDefaults());
+                .formLogin(form -> form.loginPage("/login"));
 
         return http.build();
     }

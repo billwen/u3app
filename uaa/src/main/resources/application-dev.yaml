@@ -30,3 +30,6 @@ spring:
       name: user
       password: 12345678
       roles: USER,ADMIN
+
+  thymeleaf:
+    cache: false
