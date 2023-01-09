@@ -1,12 +1,16 @@
 package com.guludoc.learning.u3app.uaa.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.guludoc.learning.u3app.uaa.security.filter.RestAuthenticationFilter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -19,7 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 import javax.servlet.ServletException;
@@ -36,12 +40,15 @@ import static org.springframework.http.HttpHeaders.SET_COOKIE;
  * https://blog.csdn.net/qiaohao0206/article/details/125571568
  *
  * Spring Security without the WebSecurityConfigurerAdapter
- * https://spring.io/blog/2022/02/21/spring-security-without-the-websecurityconfigureradapte
+ * https://spring.io/blog/2022/02/21/spring-security-without-the-websecurityconfigureradapter
  */
 @Slf4j
+@RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity(debug = true)
 public class SecurityConfig {
+
+    private final ObjectMapper objectMapper;
 
     /**
      * Configure HttpSecurity
@@ -50,24 +57,24 @@ public class SecurityConfig {
      * @throws Exception
      */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-        http.authorizeRequests()
-                        .mvcMatchers("/login", "/error")
-                                .permitAll();
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, RestAuthenticationFilter filter) throws Exception {
 
         http.authorizeRequests(
-                authz -> authz.mvcMatchers("/login", "/error").permitAll()
-                        .anyRequest().authenticated());
+                authz -> authz.mvcMatchers("/login", "/error",  "/authorize/**").permitAll()
+                        .mvcMatchers("/admin/**").hasRole("ADMIN")
+                        .mvcMatchers("/api/**").hasRole("USER")
+                        .anyRequest().denyAll()
+        );
 
         http.formLogin(form -> {
-            form.loginPage("/login")
-                    .successHandler(this::authenticationSuccessHandler)
-                    .failureHandler(this::authenticationFailureHandler);
+            form.loginPage("/login");
+//                    .successHandler(this::authenticationSuccessHandler)
+//                    .failureHandler(this::authenticationFailureHandler);
         });
 
         // CSRF Attack
         http.csrf(csrf -> {
+            csrf.ignoringAntMatchers("/authorize/**", "/api/**");
             csrf.csrfTokenRepository(new HttpSessionCsrfTokenRepository());
         });
 
@@ -81,6 +88,9 @@ public class SecurityConfig {
             logout.logoutUrl("/perform_logout");
             logout.clearAuthentication(true);
         });
+
+        // customize filter
+        http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -119,6 +129,25 @@ public class SecurityConfig {
                 .build();
 
         return new InMemoryUserDetailsManager(user);
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public RestAuthenticationFilter restAuthenticationFilter(AuthenticationManager authenticationManager) {
+        RestAuthenticationFilter filter = new RestAuthenticationFilter(objectMapper);
+
+        filter.setAuthenticationSuccessHandler(this::authenticationSuccessHandler);
+        filter.setAuthenticationFailureHandler(this::authenticationFailureHandler);
+
+        filter.setAuthenticationManager(authenticationManager);
+
+        filter.setFilterProcessesUrl("/authorize/login");
+
+        return filter;
     }
 
     /**

@@ -1,0 +1,17 @@
+###
+POST http://localhost:8080/authorize/login
+Content-Type: application/json
+
+{
+  "username": "user",
+  "password": "123"
+}
+
+### Authentication failure
+POST http://localhost:8080/authorize/login
+Content-Type: application/json
+
+{
+  "username": "user",
+  "password": "123456"
+}
