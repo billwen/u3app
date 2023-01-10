@@ -95,6 +95,12 @@
 			<version>3.6.3</version>
 		</dependency>
 
+		<!-- 3-4 密码的验证规则和自定义注解和验证器 -->
+		<dependency>
+			<groupId>org.passay</groupId>
+			<artifactId>passay</artifactId>
+			<version>1.6.2</version>
+		</dependency>
 	</dependencies>
 
 	<build>
