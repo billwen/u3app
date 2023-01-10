@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,7 +28,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
-import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -45,64 +44,45 @@ import static org.springframework.http.HttpHeaders.SET_COOKIE;
  *
  * Spring Security without the WebSecurityConfigurerAdapter
  * https://spring.io/blog/2022/02/21/spring-security-without-the-websecurityconfigureradapter
+ *
+ * Adding multiple Spring Security configurations based on pathMatcher
+ * https://stackoverflow.com/questions/66883174/adding-multiple-spring-security-configurations-based-on-pathmatcher
  */
 @Slf4j
 @RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity(debug = true)
-@Import(SecurityProblemSupport.class)
 public class SecurityConfig {
 
     private final ObjectMapper objectMapper;
 
-    private final SecurityProblemSupport securityProblemSupport;
-
     /**
-     * Configure HttpSecurity
+     * Configure HttpSecurity for MVC application
      * @param http
      * @return
      * @throws Exception
      */
+    @Order(2)
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, RestAuthenticationFilter filter) throws Exception {
 
-        http.authorizeRequests(
-                authz -> authz.mvcMatchers("/login", "/error",  "/authorize/**").permitAll()
-                        .mvcMatchers("/admin/**").hasRole("ADMIN")
-                        .mvcMatchers("/api/**").hasRole("USER")
-                        .anyRequest().denyAll()
-        );
-
-        http.formLogin(form -> {
-            form.loginPage("/login");
-//                    .successHandler(this::authenticationSuccessHandler)
-//                    .failureHandler(this::authenticationFailureHandler);
-        });
-
-        // CSRF Attack
-        http.csrf(csrf -> {
-            csrf.ignoringAntMatchers("/authorize/**", "/api/**");
-            csrf.csrfTokenRepository(new HttpSessionCsrfTokenRepository());
-        });
-
-        // Remember me
-        http.rememberMe(rememberMe -> {
-            rememberMe.tokenValiditySeconds(30*24*3600);
-        });
-
-        // Logout
-        http.logout( logout -> {
-            logout.logoutUrl("/perform_logout");
-            logout.clearAuthentication(true);
-        });
-
-        http.exceptionHandling(exp -> {
-            exp.authenticationEntryPoint(securityProblemSupport)
-                    .accessDeniedHandler(securityProblemSupport);
-        });
-
-        // customize filter
-        http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
+        http.authorizeRequests()
+                .mvcMatchers("/login", "/error").permitAll()
+                .mvcMatchers("/admin/**").hasRole("ADMIN")
+                .anyRequest().hasRole("USER")
+                .and()
+                .formLogin()
+                .loginPage("/login")
+                .and()
+                .logout()
+                .logoutUrl("/perform_logout")
+                .clearAuthentication(true)
+                .and()
+                .csrf()
+                .csrfTokenRepository(new HttpSessionCsrfTokenRepository())
+                .and()
+                .rememberMe()
+                .tokenValiditySeconds(30*24*3600);
 
         return http.build();
     }
