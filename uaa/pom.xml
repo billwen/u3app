@@ -101,6 +101,13 @@
 			<artifactId>passay</artifactId>
 			<version>1.6.2</version>
 		</dependency>
+
+		<!-- 3-6 异常的统一处理 -->
+		<dependency>
+			<groupId>org.zalando</groupId>
+			<artifactId>problem-spring-web</artifactId>
+			<version>0.27.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

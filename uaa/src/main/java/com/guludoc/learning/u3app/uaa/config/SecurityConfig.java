@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +28,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
+import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -48,9 +50,12 @@ import static org.springframework.http.HttpHeaders.SET_COOKIE;
 @RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity(debug = true)
+@Import(SecurityProblemSupport.class)
 public class SecurityConfig {
 
     private final ObjectMapper objectMapper;
+
+    private final SecurityProblemSupport securityProblemSupport;
 
     /**
      * Configure HttpSecurity
@@ -89,6 +94,11 @@ public class SecurityConfig {
         http.logout( logout -> {
             logout.logoutUrl("/perform_logout");
             logout.clearAuthentication(true);
+        });
+
+        http.exceptionHandling(exp -> {
+            exp.authenticationEntryPoint(securityProblemSupport)
+                    .accessDeniedHandler(securityProblemSupport);
         });
 
         // customize filter
