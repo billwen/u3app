@@ -1,0 +1,8 @@
+###
+# @name register invalid
+POST {{host}}/authorize/register
+Content-Type: application/json
+
+{
+  "name": "张三"
+}
