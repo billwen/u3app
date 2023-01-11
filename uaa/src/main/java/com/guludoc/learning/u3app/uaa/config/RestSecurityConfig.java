@@ -30,6 +30,8 @@ public class RestSecurityConfig {
                 .mvcMatchers("/authorize/**").permitAll()
                 .anyRequest().hasRole("USER")
                 .and()
+                .httpBasic()
+                .and()
                 .formLogin().disable()
                 .csrf().disable()
                 .rememberMe().disable()

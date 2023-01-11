@@ -1,0 +1,4 @@
+###
+# @name PrincipalUser
+GET {{host}}/api/principal
+Authorization: Basic user 123
