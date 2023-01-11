@@ -1,4 +1,13 @@
+logging:
+  pattern:
+    console: '%clr(%d{E HH:mm:ss.SSS}){blue} %clr(%-5p) %clr(${PID}){faint} %clr(---){faint} %clr([%8.15t]){cyan} %clr(%-40.40logger{0}){blue} %clr(:){red} %clr(%m){faint}%n'
+  level:
+    org.springframework.security: DEBUG
+    com.guludoc.learning.u3app.uaa: DEBUG
+
 spring:
   messages:
     basename: message
     encoding: UTF-8
+server:
+  port: ${SERVER_PORT:8080}

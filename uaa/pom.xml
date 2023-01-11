@@ -108,6 +108,12 @@
 			<artifactId>problem-spring-web</artifactId>
 			<version>0.27.0</version>
 		</dependency>
+
+		<!-- 4-6 环境和环境变量 -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
