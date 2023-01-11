@@ -42,6 +42,13 @@ spring:
   sql:
     init:
       mode: embedded
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database: h2
+    database-platform: org.hibernate.dialect.H2Dialect
+    defer-datasource-initialization: true
   h2:
     console:
       enabled: true
@@ -54,4 +61,5 @@ spring:
 
   thymeleaf:
     cache: false
+
 
