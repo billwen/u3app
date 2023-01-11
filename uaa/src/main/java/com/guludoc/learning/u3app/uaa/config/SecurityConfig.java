@@ -122,7 +122,11 @@ public class SecurityConfig {
      */
     @Bean
     public UserDetailsManager userDetailsManager(DataSource dataSource) {
-        return new JdbcUserDetailsManager(dataSource);
+        var manager = new JdbcUserDetailsManager(dataSource);
+        manager.setUsersByUsernameQuery("select username, password, enabled from mooc_users where username = ?");
+        manager.setAuthoritiesByUsernameQuery("select username, authority from mooc_authorities where username = ?");
+
+        return manager;
     }
 
     @Bean
