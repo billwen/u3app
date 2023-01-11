@@ -1,6 +1,7 @@
 package com.guludoc.learning.u3app.uaa.domain;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.constraints.Length;
@@ -11,6 +12,10 @@ import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.util.Set;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@With
 @Data
 @Entity
 @Table(name = "mooc_users")
@@ -24,6 +29,7 @@ public class User implements UserDetails, Serializable {
     @Column(length = 50, unique = true, nullable = false)
     private String username;
 
+    @JsonIgnore
     @NotEmpty
     @Column(name = "password_hash" ,length = 255, nullable = false)
     private String password;
