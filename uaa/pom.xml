@@ -136,6 +136,28 @@
 			<artifactId>unboundid-ldapsdk</artifactId>
 		</dependency>
 
+		<!-- 5-3 jwt的概念和创建以及解析 -->
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.11.5</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.11.5</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>0.11.5</version>
+			<scope>runtime</scope>
+		</dependency>
+
+
 	</dependencies>
 
 	<build>
