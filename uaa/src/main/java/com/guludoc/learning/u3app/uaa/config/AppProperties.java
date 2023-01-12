@@ -16,6 +16,11 @@ public class AppProperties {
     @Data
     @NoArgsConstructor
     public static class Jwt {
+
+        private String header = "Authorization";
+
+        private String prefix = "Bearer";
+
         private Long accessTokenExpireTime = 60_000L;
 
         private Long refreshTokenExpireTime = 30 * 24 * 3600 * 1000L;

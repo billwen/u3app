@@ -36,6 +36,8 @@ import static org.springframework.http.HttpHeaders.SET_COOKIE;
 @Import(SecurityProblemSupport.class)
 public class RestSecurityConfig {
 
+    private final AppProperties appProperties;
+
     private final ObjectMapper objectMapper;
 
     private final SecurityProblemSupport securityProblemSupport;
@@ -90,7 +92,7 @@ public class RestSecurityConfig {
 
     @Bean
     public JwtFilter jwtFilter() {
-        JwtFilter jwtFilter = new JwtFilter();
+        JwtFilter jwtFilter = new JwtFilter(appProperties);
 
         return  jwtFilter;
     }
