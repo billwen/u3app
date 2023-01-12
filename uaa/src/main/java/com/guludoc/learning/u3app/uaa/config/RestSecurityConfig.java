@@ -1,6 +1,7 @@
 package com.guludoc.learning.u3app.uaa.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.guludoc.learning.u3app.uaa.security.filter.JwtFilter;
 import com.guludoc.learning.u3app.uaa.security.filter.RestAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -67,7 +68,7 @@ public class RestSecurityConfig {
                 .accessDeniedHandler(securityProblemSupport)
                 .and()
                 .userDetailsService(userDetailsService)
-                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authenticationManager(authenticationManager);
 
         return http.build();
@@ -85,6 +86,13 @@ public class RestSecurityConfig {
         filter.setFilterProcessesUrl("/authorize/login");
 
         return filter;
+    }
+
+    @Bean
+    public JwtFilter jwtFilter() {
+        JwtFilter jwtFilter = new JwtFilter();
+
+        return  jwtFilter;
     }
 
     /**

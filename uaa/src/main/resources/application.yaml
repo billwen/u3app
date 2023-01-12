@@ -11,3 +11,8 @@ spring:
     encoding: UTF-8
 server:
   port: ${SERVER_PORT:8080}
+
+mooc:
+  jwt:
+    access-token-expire-time: 300000
+    refresh-token-expire-time: 2592000000
