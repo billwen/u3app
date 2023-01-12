@@ -2,3 +2,13 @@
 # @name PrincipalUser
 GET {{host}}/api/principal
 Authorization: Basic user 123
+
+###
+# @name PrincipalUser
+GET {{host}}/api/principal
+Authorization: Basic zhaoliu 12345
+
+###
+# @name PrincipalUser
+GET {{host}}/api/principal
+Authorization: Basic zhaoliu 123

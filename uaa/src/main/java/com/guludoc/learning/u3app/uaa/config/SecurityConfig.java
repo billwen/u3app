@@ -1,5 +1,7 @@
 package com.guludoc.learning.u3app.uaa.config;
 
+import com.guludoc.learning.u3app.uaa.repository.LdapUserRepository;
+import com.guludoc.learning.u3app.uaa.security.ldap.LdapMultiAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -7,10 +9,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.core.userdetails.UserDetailsPasswordService;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
@@ -38,6 +43,10 @@ import java.util.Map;
 public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
+
+    private final UserDetailsPasswordService userDetailsPasswordService;
+
+    private final LdapUserRepository ldapUserRepository;
 
     /**
      * Configure HttpSecurity for MVC application
@@ -67,7 +76,8 @@ public class SecurityConfig {
                 .rememberMe()
                 .tokenValiditySeconds(30*24*3600)
                 .and()
-                .userDetailsService(userDetailsService);
+                .userDetailsService(userDetailsService)
+                .authenticationManager(authenticationManager(http));
 
         return http.build();
     }
@@ -101,7 +111,26 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
+    DaoAuthenticationProvider daoAuthenticationProvider() {
+        var daoAuthenticationProvider = new DaoAuthenticationProvider();
+        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+        daoAuthenticationProvider.setUserDetailsPasswordService(userDetailsPasswordService);
+
+        return daoAuthenticationProvider;
+    }
+
+    @Bean
+    LdapMultiAuthenticationProvider ldapMultiAuthenticationProvider() {
+        return new LdapMultiAuthenticationProvider(ldapUserRepository);
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        builder.authenticationProvider(daoAuthenticationProvider());
+        builder.authenticationProvider(ldapMultiAuthenticationProvider());
+
+        return builder.build();
     }
 }

@@ -67,7 +67,8 @@ public class RestSecurityConfig {
                 .accessDeniedHandler(securityProblemSupport)
                 .and()
                 .userDetailsService(userDetailsService)
-                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
+                .authenticationManager(authenticationManager);
 
         return http.build();
     }
