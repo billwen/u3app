@@ -6,3 +6,34 @@ Content-Type: application/json
 {
   "name": "张三"
 }
+
+###
+# @name wrong crediential
+POST {{host}}/authorize/token
+Content-Type: application/json
+
+{
+  "username": "user",
+  "password": "13444"
+}
+
+###
+# @name getToken
+POST {{host}}/authorize/token
+Content-Type: application/json
+
+{
+  "username": "user",
+  "password": "123"
+}
+
+> {%
+client.global.set("accessToken", response.body.accessToken)
+client.global.set("refreshToken", response.body.refreshToken)
+%}
+
+###
+# @name refreshToken
+POST {{host}}/authorize/refresh?refreshToken={{refreshToken}}
+Authorization: Bearer {{accessToken}}
+

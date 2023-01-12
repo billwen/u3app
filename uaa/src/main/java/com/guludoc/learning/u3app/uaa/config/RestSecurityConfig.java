@@ -94,7 +94,7 @@ public class RestSecurityConfig {
     public JwtFilter jwtFilter() {
         JwtFilter jwtFilter = new JwtFilter(appProperties);
 
-        return  jwtFilter;
+        return jwtFilter;
     }
 
     /**
