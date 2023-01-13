@@ -56,6 +56,12 @@ public class User implements UserDetails, Serializable {
     @Column(name = "credentials_non_expired", nullable = false)
     private boolean credentialsNonExpired;
 
+    @Column(name = "using_mfa", nullable = false)
+    private boolean usingMfa;
+
+    @Column(name = "totp_key", nullable = true)
+    private String totpKey;
+
     @ManyToMany
     @Fetch(FetchMode.JOIN)
     @JoinTable(

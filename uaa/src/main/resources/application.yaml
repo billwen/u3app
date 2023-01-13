@@ -16,3 +16,11 @@ mooc:
   jwt:
     access-token-expire-time: 300000
     refresh-token-expire-time: 2592000000
+
+  ali:
+    api-key: ${ALI_API_KEY | ""}
+    api-secret: ${ALI_API_SECRET | ""}
+
+  message-provider:
+    name: console
+    api-url: ""
