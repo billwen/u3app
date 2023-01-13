@@ -74,6 +74,18 @@ spring:
       ldif: classpath:test-ldap-server.ldif
       port: 8389
     urls: ldap://localhost:8389/
+  mail:
+    default-encoding: UTF-8
+    host: ${SMTP_HOST}
+    password: ${SMTP_PASSWORD}
+    port: ${SMTP_PORT}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    username: ${SMTP_USERNAME}
 
 
 

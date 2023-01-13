@@ -24,3 +24,7 @@ mooc:
   message-provider:
     name: console
     api-url: ""
+
+  email-provider:
+    name: console
+    api-key: ${EMAIL_API_KEY}

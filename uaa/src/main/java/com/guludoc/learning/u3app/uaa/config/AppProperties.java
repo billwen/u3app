@@ -19,6 +19,8 @@ public class AppProperties {
 
     private MessageProvider messageProvider = new MessageProvider();
 
+    private EmailProvider emailProvider = new EmailProvider();
+
     @Data
     @NoArgsConstructor
     public static class Jwt {
@@ -54,5 +56,13 @@ public class AppProperties {
         private String name = "";
 
         private String apiUrl = "";
+    }
+
+    @Data
+    @NoArgsConstructor
+    public static class EmailProvider {
+        private String name = "";
+
+        private String apiKey = "";
     }
 }
