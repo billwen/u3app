@@ -3,9 +3,11 @@ package com.guludoc.learning.u3app.uaa.domain.dto;
 import com.guludoc.learning.u3app.uaa.annotation.PasswordMatch;
 import com.guludoc.learning.u3app.uaa.annotation.ValidEmail;
 import com.guludoc.learning.u3app.uaa.annotation.ValidPassword;
+import com.guludoc.learning.u3app.uaa.config.Constants;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 
@@ -30,4 +32,8 @@ public class UserDto implements Serializable {
     private String email;
 
     private String name;
+
+    @NotEmpty
+    @Pattern(regexp = Constants.PATTERN_MOBILE)
+    private String mobile;
 }

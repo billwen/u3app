@@ -1,11 +1,4 @@
-###
-# @name register invalid
-POST {{host}}/authorize/register
-Content-Type: application/json
 
-{
-  "name": "张三"
-}
 
 ###
 # @name wrong crediential
@@ -37,3 +30,17 @@ client.global.set("refreshToken", response.body.refreshToken)
 POST {{host}}/authorize/refresh?refreshToken={{refreshToken}}
 Authorization: Bearer {{accessToken}}
 
+###
+# @name register invalid
+POST {{host}}/authorize/register
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "username": "billwen",
+  "password": "Super@128.1",
+  "matchPassword": "Super@128.1",
+  "name": "张三",
+  "email": "gang.wen@gmail.com",
+  "mobile": "18651580683"
+}
