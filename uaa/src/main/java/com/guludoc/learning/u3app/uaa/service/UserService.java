@@ -6,6 +6,7 @@ import com.guludoc.learning.u3app.uaa.domain.User;
 import com.guludoc.learning.u3app.uaa.repository.RoleRepository;
 import com.guludoc.learning.u3app.uaa.repository.UserRepository;
 import com.guludoc.learning.u3app.uaa.util.JwtUtil;
+import com.guludoc.learning.u3app.uaa.util.TotpUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
@@ -16,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
@@ -30,6 +32,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final JwtUtil jwtUtil;
+
+    private final TotpUtil totpUtil;
 
     public JwtTokens login(String username, String password) throws AuthenticationException {
         return userRepository.findUserByUsername(username)
@@ -68,12 +72,20 @@ public class UserService {
                 .map(role -> {
                     var userToSave = user.withAuthorities(Set.of(role))
                             .withPassword(passwordEncoder.encode(user.getPassword()))
-                            .withAccountNonExpired(true)
-                            .withAccountNonLocked(true)
-                            .withEnabled(true);
+                            .withMfaKey(totpUtil.encodeKeyToString());
 
                     return userRepository.save(userToSave);
                 })
                 .orElseThrow( () -> new UsernameNotFoundException("Can't find user"));
+    }
+
+    public Optional<User> findOptionalByUsernameAndPassword(String username, String password) {
+        return userRepository.findUserByUsername(username)
+                .filter(user -> passwordEncoder.matches(password, user.getPassword()));
+    }
+
+    public User upgradeMfaKey(User user) {
+        User userToSave = user.withMfaKey(totpUtil.encodeKeyToString());
+        return userRepository.save(userToSave);
     }
 }

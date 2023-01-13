@@ -45,22 +45,28 @@ public class User implements UserDetails, Serializable {
     private String name;
 
     // 基础类型，方法是is开头
-    private boolean enabled;
+    @Builder.Default
+    private boolean enabled = true;
 
+    @Builder.Default
     @Column(name = "account_non_expired", nullable = false)
-    private boolean accountNonExpired;
+    private boolean accountNonExpired = true;
 
+    @Builder.Default
     @Column(name ="account_non_locked", nullable = false)
-    private boolean accountNonLocked;
+    private boolean accountNonLocked = true;
 
+    @Builder.Default
     @Column(name = "credentials_non_expired", nullable = false)
-    private boolean credentialsNonExpired;
+    private boolean credentialsNonExpired = true;
 
+    @Builder.Default
     @Column(name = "using_mfa", nullable = false)
-    private boolean usingMfa;
+    private boolean usingMfa = false;
 
-    @Column(name = "totp_key", nullable = true)
-    private String totpKey;
+    @JsonIgnore
+    @Column(name = "mfa_key", nullable = true)
+    private String mfaKey;
 
     @ManyToMany
     @Fetch(FetchMode.JOIN)
