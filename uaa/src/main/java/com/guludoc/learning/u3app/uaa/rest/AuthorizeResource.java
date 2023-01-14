@@ -5,6 +5,7 @@ import com.guludoc.learning.u3app.uaa.domain.User;
 import com.guludoc.learning.u3app.uaa.domain.dto.LoginDto;
 import com.guludoc.learning.u3app.uaa.domain.dto.UserDto;
 import com.guludoc.learning.u3app.uaa.exception.DuplicateProblem;
+import com.guludoc.learning.u3app.uaa.service.UserCacheService;
 import com.guludoc.learning.u3app.uaa.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,8 @@ import javax.validation.Valid;
 public class AuthorizeResource {
 
     private final UserService userService;
+
+    private final UserCacheService cacheService;
 
     @PostMapping("/register")
     public User register(@Valid @RequestBody UserDto userDto) {
@@ -65,7 +68,7 @@ public class AuthorizeResource {
                         return ResponseEntity.ok().body(userService.login(loginDto.getUsername(), loginDto.getPassword()));
                     } else {
                         // 4 使用了mfa
-                        String mfaId = userCacheService.cache(user);
+                        String mfaId = cacheService.cacheUser(user);
                         // 5 "X-Authenticate: mfa realm = mfaId"
                         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                                 .header("X-Authenticate", "mfa", "realm=" + mfaId)

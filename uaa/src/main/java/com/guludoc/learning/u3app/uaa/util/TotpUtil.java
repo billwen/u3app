@@ -70,4 +70,8 @@ public class TotpUtil {
             return Optional.empty();
         }
     }
+
+    public long getTimeStepInSeconds() {
+        return TIME_STEP;
+    }
 }
