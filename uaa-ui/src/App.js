@@ -4,20 +4,19 @@ import './App.css';
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <form action="#">
+        <label htmlFor="username">用户名</label>
+        <input type="text" id="username" name="username"/>
+
+        <label htmlFor="">密码</label>
+        <input type="password" id="password" name="password"/>
+
+        <button type="submit">登录</button>
+
+        <h3>还没有注册?</h3>
+      </form>
+
+
     </div>
   );
 }
