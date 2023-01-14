@@ -1,5 +1,6 @@
 package com.guludoc.learning.u3app.uaa.service;
 
+import com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap;
 import com.guludoc.learning.u3app.uaa.config.Constants;
 import com.guludoc.learning.u3app.uaa.domain.JwtTokens;
 import com.guludoc.learning.u3app.uaa.domain.User;
@@ -87,5 +88,9 @@ public class UserService {
     public User upgradeMfaKey(User user) {
         User userToSave = user.withMfaKey(totpUtil.encodeKeyToString());
         return userRepository.save(userToSave);
+    }
+
+    public Optional<String> createTotp(String key) {
+        return totpUtil.createTotp(key);
     }
 }

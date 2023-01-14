@@ -3,11 +3,19 @@ package com.guludoc.learning.u3app.uaa.rest;
 import com.guludoc.learning.u3app.uaa.domain.JwtTokens;
 import com.guludoc.learning.u3app.uaa.domain.User;
 import com.guludoc.learning.u3app.uaa.domain.dto.LoginDto;
+import com.guludoc.learning.u3app.uaa.domain.dto.SendTotpDto;
 import com.guludoc.learning.u3app.uaa.domain.dto.UserDto;
+import com.guludoc.learning.u3app.uaa.domain.dto.VerifyTotpDto;
 import com.guludoc.learning.u3app.uaa.exception.DuplicateProblem;
+import com.guludoc.learning.u3app.uaa.exception.InvalidTotpProblem;
+import com.guludoc.learning.u3app.uaa.exception.UserNotEnabledProblem;
+import com.guludoc.learning.u3app.uaa.service.EmailService;
+import com.guludoc.learning.u3app.uaa.service.MessageService;
 import com.guludoc.learning.u3app.uaa.service.UserCacheService;
 import com.guludoc.learning.u3app.uaa.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -16,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/authorize")
@@ -24,6 +33,10 @@ public class AuthorizeResource {
     private final UserService userService;
 
     private final UserCacheService cacheService;
+
+    private final MessageService messageService;
+
+    private final EmailService emailService;
 
     @PostMapping("/register")
     public User register(@Valid @RequestBody UserDto userDto) {
@@ -62,6 +75,9 @@ public class AuthorizeResource {
                     // 1. 升级密码编码
 
                     // 2. 验证
+                    if (!user.isEnabled() || !user.isAccountNonExpired() || !user.isAccountNonLocked() || !user.isCredentialsNonExpired() ) {
+                        throw new UserNotEnabledProblem("User not enabled");
+                    }
 
                     // 3. 判断 usingMfa，如果false，我们就直接返回Token
                     if (!user.isUsingMfa()) {
@@ -77,6 +93,32 @@ public class AuthorizeResource {
                 })
                 .orElseThrow( () -> new BadCredentialsException("用户名或密码错误"));
 
+    }
+
+    @PutMapping("/totp")
+    public void setTotp(@Valid @RequestBody SendTotpDto sendTotpDto) {
+        cacheService.retrieveUser(sendTotpDto.getMfaId())
+                .flatMap(
+                        user -> userService.createTotp(user.getMfaKey())
+                                .map(totp -> Pair.of(user, totp))
+                )
+                .ifPresentOrElse(pair -> {
+                    log.debug("totp: {}", pair.getRight());
+                    if (sendTotpDto.getType() == SendTotpDto.MfaType.SMS) {
+                        messageService.send(pair.getLeft().getMobile(), pair.getRight());
+                    } else {
+                        emailService.send(pair.getLeft().getEmail(), pair.getRight());
+                    }
+                }, () -> {
+                    throw new InvalidTotpProblem("Invalid totp");
+                });
+    }
+
+    @PostMapping("/totp")
+    public JwtTokens verifyTotp(@Valid @RequestBody VerifyTotpDto verifyTotpDto) {
+        return cacheService.verifyTotp(verifyTotpDto.getMfaId(), verifyTotpDto.getCode())
+                .map( user -> userService.login(user.getUsername(), user.getPassword()))
+                .orElseThrow( () -> new InvalidTotpProblem("Invalid totp"));
     }
 
     @PostMapping("/refresh")
