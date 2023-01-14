@@ -9,23 +9,32 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
@@ -45,6 +54,8 @@ public class RestSecurityConfig {
     private final UserDetailsService userDetailsService;
 
     private final AuthenticationManager authenticationManager;
+
+    private final Environment environment;
 
     @Order(1)
     @Bean
@@ -69,6 +80,8 @@ public class RestSecurityConfig {
                 .authenticationEntryPoint(securityProblemSupport)
                 .accessDeniedHandler(securityProblemSupport)
                 .and()
+//                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .userDetailsService(userDetailsService)
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authenticationManager(authenticationManager);
@@ -140,5 +153,28 @@ public class RestSecurityConfig {
             Collection<String> headers = res.getHeaders(SET_COOKIE);
             res.addHeader(SET_COOKIE, String.format("%s; %s", "header", "SameSite=Strict"));
         };
+    }
+
+    /**
+     * 可以在Spring Security 中配置cors
+     */
+    // @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        // 允许跨域访问的主机
+        if (environment.acceptsProfiles(Profiles.of("dev"))) {
+            configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+        } else {
+            configuration.setAllowedOrigins(Collections.singletonList("https://uaa.imooc.com"));
+        }
+
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.addExposedHeader("X-Authenticate");
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/api/**", configuration);
+        return source;
     }
 }
