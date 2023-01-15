@@ -53,6 +53,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+
     database: h2
     database-platform: org.hibernate.dialect.H2Dialect
     defer-datasource-initialization: true

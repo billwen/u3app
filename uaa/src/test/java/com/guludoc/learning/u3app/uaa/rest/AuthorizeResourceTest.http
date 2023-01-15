@@ -1,7 +1,5 @@
-
-
-###
-# @name wrong crediential
+### wrongCrediential
+# Wrong crediential
 POST {{host}}/authorize/token
 Content-Type: application/json
 
@@ -10,28 +8,8 @@ Content-Type: application/json
   "password": "13444"
 }
 
-###
-# @name getToken
-POST {{host}}/authorize/token
-Content-Type: application/json
-
-{
-  "username": "user",
-  "password": "123"
-}
-
-> {%
-client.global.set("accessToken", response.body.accessToken)
-client.global.set("refreshToken", response.body.refreshToken)
-%}
-
-###
-# @name refreshToken
-POST {{host}}/authorize/refresh?refreshToken={{refreshToken}}
-Authorization: Bearer {{accessToken}}
-
-###
-# @name register invalid
+### invalidRegistration
+# invalid registration
 POST {{host}}/authorize/register
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
@@ -44,3 +22,70 @@ Content-Type: application/json
   "email": "gang.wen@gmail.com",
   "mobile": "18651580683"
 }
+
+### startLogin
+# Start login process
+POST {{host}}/authorize/token
+Content-Type: application/json
+
+{
+  "username": "user",
+  "password": "123"
+}
+
+> {%
+const hs = response.headers.valuesOf("X-Authenticate");
+var code = ""
+for (var i=0; i<hs.length; i++) {
+    var h = hs[i].trim();
+    if(h.startsWith("realm=")) {
+        code = h.replace("realm=", "");
+        client.log("MFAID " + code);
+        client.global.set("mfaid", code);
+    }
+}
+%}
+
+### requestCode
+# Request TOTP Code
+PUT {{host}}/authorize/totp
+Content-Type: application/json
+
+{
+  "mfaId": "{{mfaid}}",
+  "type": "SMS"
+}
+
+### completeLogin
+# Input code and completed login
+POST {{host}}/authorize/totp
+Content-Type: application/json
+
+{
+  "mfaId": "{{mfaid}}",
+  "code": "924824"
+}
+
+> {%
+if (response.status === 200) {
+    client.global.set("accessToken", response.body.accessToken)
+    client.global.set("refreshToken", response.body.refreshToken)
+}
+%}
+
+###
+# @name refreshToken
+POST {{host}}/authorize/refresh?refreshToken={{refreshToken}}
+Authorization: Bearer {{accessToken}}
+
+> {%
+if (response.status === 200) {
+    client.global.set("accessToken", response.body.accessToken)
+    client.global.set("refreshToken", response.body.refreshToken)
+}
+%}
+
+###
+# @name Use token - correct
+GET {{host}}/api/principal
+Authorization: Bearer {{accessToken}}

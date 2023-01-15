@@ -21,8 +21,4 @@ public class SendTotpDto implements Serializable {
     @NotNull
     private MfaType type = MfaType.SMS;
 
-    public enum MfaType {
-        EMAIL,
-        SMS;
-    }
 }

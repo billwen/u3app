@@ -9,6 +9,10 @@ spring:
   messages:
     basename: message
     encoding: UTF-8
+
+  jpa:
+    open-in-view: true
+
 server:
   port: ${SERVER_PORT:8080}
 
@@ -28,3 +32,4 @@ imooc:
   email-provider:
     name: console
     api-key: ${EMAIL_API_KEY}
+

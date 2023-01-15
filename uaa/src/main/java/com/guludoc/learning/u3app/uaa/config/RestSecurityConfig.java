@@ -81,7 +81,7 @@ public class RestSecurityConfig {
                 .accessDeniedHandler(securityProblemSupport)
                 .and()
 //                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .userDetailsService(userDetailsService)
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authenticationManager(authenticationManager);

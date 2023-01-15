@@ -2,10 +2,7 @@ package com.guludoc.learning.u3app.uaa.rest;
 
 import com.guludoc.learning.u3app.uaa.domain.JwtTokens;
 import com.guludoc.learning.u3app.uaa.domain.User;
-import com.guludoc.learning.u3app.uaa.domain.dto.LoginDto;
-import com.guludoc.learning.u3app.uaa.domain.dto.SendTotpDto;
-import com.guludoc.learning.u3app.uaa.domain.dto.UserDto;
-import com.guludoc.learning.u3app.uaa.domain.dto.VerifyTotpDto;
+import com.guludoc.learning.u3app.uaa.domain.dto.*;
 import com.guludoc.learning.u3app.uaa.exception.DuplicateProblem;
 import com.guludoc.learning.u3app.uaa.exception.InvalidTotpProblem;
 import com.guludoc.learning.u3app.uaa.exception.UserNotEnabledProblem;
@@ -84,7 +81,9 @@ public class AuthorizeResource {
                         return ResponseEntity.ok().body(userService.login(loginDto.getUsername(), loginDto.getPassword()));
                     } else {
                         // 4 使用了mfa
-                        String mfaId = cacheService.cacheUser(user);
+                        // Save raw password in the object
+                        upgradedUser = upgradedUser.withPassword(loginDto.getPassword());
+                        String mfaId = cacheService.cacheUser(upgradedUser);
                         // 5 "X-Authenticate: mfa realm = mfaId"
                         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                                 .header("X-Authenticate", "mfa", "realm=" + mfaId)
@@ -97,6 +96,7 @@ public class AuthorizeResource {
 
     @PutMapping("/totp")
     public void setTotp(@Valid @RequestBody SendTotpDto sendTotpDto) {
+        log.info("Send by {} to {}", sendTotpDto.getType().toString(), sendTotpDto.getMfaId());
         cacheService.retrieveUser(sendTotpDto.getMfaId())
                 .flatMap(
                         user -> userService.createTotp(user.getMfaKey())
@@ -104,7 +104,7 @@ public class AuthorizeResource {
                 )
                 .ifPresentOrElse(pair -> {
                     log.debug("totp: {}", pair.getRight());
-                    if (sendTotpDto.getType() == SendTotpDto.MfaType.SMS) {
+                    if (sendTotpDto.getType() == MfaType.SMS) {
                         messageService.send(pair.getLeft().getMobile(), pair.getRight());
                     } else {
                         emailService.send(pair.getLeft().getEmail(), pair.getRight());
