@@ -93,4 +93,8 @@ public class UserService {
     public Optional<String> createTotp(String key) {
         return totpUtil.createTotp(key);
     }
+
+    public Optional<User> findOptionalByEmail(String email) {
+        return userRepository.findUserByEmail(email);
+    }
 }

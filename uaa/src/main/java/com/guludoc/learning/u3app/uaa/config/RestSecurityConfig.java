@@ -57,6 +57,24 @@ public class RestSecurityConfig {
 
     private final Environment environment;
 
+    /**
+     * Setup security filter chain
+     * Samples
+     * mvcMatchers("/api/users/{username}/**")
+     * access("hasRole('ADMIN') or authentication.name.equals(#username)")
+     *
+     * public class UserValidationService {
+     *     public boolean checkUsername(Authentication authentication, String username) {
+     *         return authentication.getName().equals(username);
+     *     }
+     * }
+     *
+     * .mvcMatchers("/api/users/{username}/**")
+     * .access("@userValidationService.checkUsername(authentication, #username)")
+     * @param http
+     * @return
+     * @throws Exception
+     */
     @Order(1)
     @Bean
     public SecurityFilterChain mvcSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -69,6 +87,7 @@ public class RestSecurityConfig {
                 .and()
                 .authorizeRequests()
                 .mvcMatchers("/authorize/**").permitAll()
+                .mvcMatchers("/api/users/**").access("hasRole('ADMIN') or authentication.name.equals(#username)")
                 .anyRequest().hasRole("USER")
                 .and()
                 .httpBasic()

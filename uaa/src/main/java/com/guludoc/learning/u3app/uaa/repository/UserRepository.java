@@ -10,6 +10,13 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findUserByUsername(String username);
 
+    /**
+     * 根据email查找用户
+     * @param email 用户的email地址
+     * @return Optional
+     */
+    Optional<User> findUserByEmail(String email);
+
     long countByUsername(String username);
 
     long countByEmail(String email);
