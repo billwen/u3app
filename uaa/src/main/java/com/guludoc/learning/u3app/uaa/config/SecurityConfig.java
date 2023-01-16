@@ -4,10 +4,13 @@ import com.guludoc.learning.u3app.uaa.repository.LdapUserRepository;
 import com.guludoc.learning.u3app.uaa.security.ldap.LdapMultiAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -132,5 +135,13 @@ public class SecurityConfig {
         builder.authenticationProvider(ldapMultiAuthenticationProvider());
 
         return builder.build();
+    }
+
+    @ConditionalOnProperty(prefix = "imooc.security", name = "role-hierachy-enabled", havingValue = "true")
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+        roleHierarchy.setHierarchy("ROLE_ADMIN > ROLE_MANAGER\nROLE_MANAGER > ROLE_USER");
+        return roleHierarchy;
     }
 }

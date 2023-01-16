@@ -14,7 +14,6 @@ import org.springframework.core.env.Profiles;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
@@ -87,6 +86,7 @@ public class RestSecurityConfig {
                 .and()
                 .authorizeRequests()
                 .mvcMatchers("/authorize/**").permitAll()
+                .mvcMatchers("/api/users/manager").hasRole("MANAGER")
                 .mvcMatchers("/api/users/**").access("hasRole('ADMIN') or authentication.name.equals(#username)")
                 .anyRequest().hasRole("USER")
                 .and()

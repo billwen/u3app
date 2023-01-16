@@ -20,12 +20,17 @@ public class UserResource {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/users/by-email/{email}")
     public User getUserByEmail(@PathVariable String email) {
-        return userService.findOptionalByEmail(email).orElseThrow()
+        return userService.findOptionalByEmail(email).orElseThrow();
     }
 
     @GetMapping("/users/{username}")
     public String getCurrentUsername(@PathVariable String username) {
         return "hello. " + username;
+    }
+
+    @GetMapping("/users/manager")
+    public String getManagerResource() {
+        return "hello. ";
     }
 
     @GetMapping("/principal")
