@@ -1,6 +1,7 @@
 package com.guludoc.learning.u3app.uaa.rest;
 
 import com.guludoc.learning.u3app.uaa.domain.User;
+import com.guludoc.learning.u3app.uaa.domain.dto.UserProfileDto;
 import com.guludoc.learning.u3app.uaa.service.UserService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -10,12 +11,24 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.security.Principal;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
 public class UserResource {
 
     private final UserService userService;
+
+    @PostMapping("/me")
+    public User saveProfile(@Valid @RequestBody UserProfileDto userProfileDto, Principal principal) {
+        return userService.findOptionalByUsername(principal.getName())
+                .map(user -> userService.saveUser(user.withName(userProfileDto.getName())
+                        .withEmail(userProfileDto.getEmail())
+                        .withMobile(userProfileDto.getMobile())))
+                .orElseThrow();
+    }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/users/by-email/{email}")

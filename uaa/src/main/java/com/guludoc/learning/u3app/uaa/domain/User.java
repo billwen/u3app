@@ -2,15 +2,21 @@ package com.guludoc.learning.u3app.uaa.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Proxy;
+import org.hibernate.annotations.*;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -69,17 +75,41 @@ public class User implements UserDetails {
     @Column(name = "mfa_key")
     private String mfaKey;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+//    @ManyToMany(fetch = FetchType.EAGER)
+//    @Fetch(FetchMode.JOIN)
+//    @JoinTable(
+//            name = "mooc_users_roles",
+//            joinColumns = {
+//                @JoinColumn(name = "user_id", referencedColumnName = "id")
+//            },
+//            inverseJoinColumns = {
+//                    @JoinColumn(name = "role_id", referencedColumnName = "id")
+//            }
+//        )
+//    private Set<Role> authorities;
+
+    @Getter
+    @Setter
+    @Builder.Default
+    @JsonIgnore
+    @ManyToMany
     @Fetch(FetchMode.JOIN)
     @JoinTable(
             name = "mooc_users_roles",
-            joinColumns = {
-                @JoinColumn(name = "user_id", referencedColumnName = "id")
-            },
-            inverseJoinColumns = {
-                    @JoinColumn(name = "role_id", referencedColumnName = "id")
-            }
-        )
-    private Set<Role> authorities;
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
+    )
+    @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    @BatchSize(size = 20)
+    private Set<RBACRole> roles = new HashSet<>();
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream()
+                .flatMap(role -> Stream.concat(
+                        Stream.of(new SimpleGrantedAuthority((role.getRoleName()))),
+                        role.getPermissions().stream()
+                ))
+                .collect(Collectors.toSet());
+    }
 }

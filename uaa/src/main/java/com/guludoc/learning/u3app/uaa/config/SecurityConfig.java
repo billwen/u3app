@@ -137,8 +137,8 @@ public class SecurityConfig {
         return builder.build();
     }
 
-    @ConditionalOnProperty(prefix = "imooc.security", name = "role-hierachy-enabled", havingValue = "true")
-    @Bean
+//    @ConditionalOnProperty(prefix = "imooc.security", name = "role-hierachy-enabled", havingValue = "true")
+//    @Bean
     public RoleHierarchy roleHierarchy() {
         RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
         roleHierarchy.setHierarchy("ROLE_ADMIN > ROLE_MANAGER\nROLE_MANAGER > ROLE_USER");

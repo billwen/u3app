@@ -1,6 +1,5 @@
 package com.guludoc.learning.u3app.uaa.service;
 
-import com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap;
 import com.guludoc.learning.u3app.uaa.config.Constants;
 import com.guludoc.learning.u3app.uaa.domain.JwtTokens;
 import com.guludoc.learning.u3app.uaa.domain.User;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-import java.util.Set;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -71,8 +69,7 @@ public class UserService {
     public User register(User user) throws AuthenticationException {
         return roleRepository.findByAuthority(Constants.ROLE_USER)
                 .map(role -> {
-                    var userToSave = user.withAuthorities(Set.of(role))
-                            .withPassword(passwordEncoder.encode(user.getPassword()))
+                    var userToSave = user.withPassword(passwordEncoder.encode(user.getPassword()))
                             .withMfaKey(totpUtil.encodeKeyToString());
 
                     return userRepository.save(userToSave);
@@ -96,5 +93,14 @@ public class UserService {
 
     public Optional<User> findOptionalByEmail(String email) {
         return userRepository.findUserByEmail(email);
+    }
+
+    public Optional<User> findOptionalByUsername(String username) {
+        return userRepository.findUserByUsername(username);
+    }
+
+    @Transactional
+    public User saveUser(User user) {
+        return userRepository.save(user);
     }
 }
