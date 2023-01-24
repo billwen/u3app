@@ -19,6 +19,7 @@
     <description>慕课网 Spring Security 实战</description>
     <modules>
         <module>uaa-ui</module>
+        <module>uaa-rt</module>
         <module>uaa</module>
     </modules>
 
