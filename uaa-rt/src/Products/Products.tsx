@@ -1,4 +1,5 @@
 import React from "react";
+import { Outlet } from "react-router";
 import { css } from '@emotion/css'
 
 const ProductsStyles = css`
@@ -15,7 +16,7 @@ const Products = () => {
     return (
         <div className={ProductsStyles}>
             <img src={process.env.PUBLIC_URL + '/assets/img/logo.svg'} alt="Ultimate Burgers" className="Logo"/>
-            Products
+            <Outlet />
         </div>
     );
 }
