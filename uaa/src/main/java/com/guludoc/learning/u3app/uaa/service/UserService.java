@@ -1,5 +1,6 @@
 package com.guludoc.learning.u3app.uaa.service;
 
+import com.guludoc.learning.u3app.uaa.annotation.RoleAdminOrSelfWithUserParam;
 import com.guludoc.learning.u3app.uaa.config.Constants;
 import com.guludoc.learning.u3app.uaa.domain.JwtTokens;
 import com.guludoc.learning.u3app.uaa.domain.User;
@@ -10,6 +11,7 @@ import com.guludoc.learning.u3app.uaa.util.TotpUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -99,7 +101,9 @@ public class UserService {
         return userRepository.findUserByUsername(username);
     }
 
+//    @PreAuthorize("authentication.name == #user.username or hasRole('ADMIN')")
     @Transactional
+    @RoleAdminOrSelfWithUserParam
     public User saveUser(User user) {
         return userRepository.save(user);
     }

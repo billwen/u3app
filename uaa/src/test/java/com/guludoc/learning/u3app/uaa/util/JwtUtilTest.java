@@ -29,7 +29,7 @@ public class JwtUtilTest {
 
         var user = User.builder()
                 .username(username)
-                .authorities(authorities)
+    //            .authorities(authorities)
                 .build();
 
         var appProperties = new AppProperties();
