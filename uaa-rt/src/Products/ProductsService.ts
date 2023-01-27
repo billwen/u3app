@@ -17,11 +17,27 @@ export const listProducts : () => Promise<Product[]> = async () => {
     throw new Error('Error while downloading data')
 };
 
-export const retrieveProduct: (id: string) => Promise<Product> = async (id) => {
+export const retrieveProduct = async (id: string) => {
     const response = await fetch(`${api_base}/api/products/${id}`);
     if (response.ok) {
         return await response.json();
     }
 
     throw new Error("Error, while downloading details")
+}
+
+export const createProduct = async (form: Product) => {
+    const response = await fetch(`/api/products`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }    ,
+        body: JSON.stringify(form)
+    })
+
+    if (response.ok) {
+        return await response.json();
+    }
+
+    throw new Error("Error, while creating a new product");
 }
