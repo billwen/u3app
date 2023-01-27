@@ -31,7 +31,7 @@ const App = () => {
                 <Routes>
                     <Route path="/products*" element={ <ProductsPage /> } />
                     <Route
-                        path="/admin"
+                        path="/admin*"
                         element={
                             <ProtectedRoute authenticated={authenticated} redirectTo="/products">
                                 <AdminPage />
