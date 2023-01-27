@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import './App.scss';
 import { css } from '@emotion/css';
 import { BrowserRouter as Router, Route, Routes, Navigate} from 'react-router-dom';
@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate} from 'react-router-do
 import Nav from "Common/Nav";
 import ProductsPage from "Products/ProductsPage";
 import AdminPage from "Admin/AdminPage";
+import ProtectedRoute from "Common/ProtectedRoute";
 
 const AppStyles = css`
   margin: 50px auto;
@@ -19,14 +20,24 @@ const AppStyles = css`
   }
 `;
 const App = () => {
-  return (
+    const [authenticated, setAuthenticated] = useState(true);
+
+    // <Route path="/admin" element={ <ProtectedRoute authenticated={authenticated}> <AdminPage /> </ProtectedRoute>  } />
+    return (
       <div className={AppStyles}>
         <Router>
             <div className="Container">
                 <Nav />
                 <Routes>
                     <Route path="/products*" element={ <ProductsPage /> } />
-                    <Route path="/admin" element={ <AdminPage /> } />
+                    <Route
+                        path="/admin"
+                        element={
+                            <ProtectedRoute authenticated={authenticated} redirectTo="/products">
+                                <AdminPage />
+                            </ProtectedRoute>
+                        }
+                    />
                     <Route path="*" element={<Navigate to="/products" />} />
                 </Routes>
             </div>
