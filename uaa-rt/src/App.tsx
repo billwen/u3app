@@ -3,10 +3,10 @@ import './App.scss';
 import { css } from '@emotion/css';
 import { BrowserRouter as Router, Route, Routes, Navigate} from 'react-router-dom';
 
-import Nav from "./Common/Nav";
-import Products from "./Products/Products";
-import ProductsIndex from "./Products/ProductsIndex";
-import Admin from "./Admin/Admin";
+import Nav from "Common/Nav";
+import ProductsPage from "Products/ProductsPage";
+import ProductsIndex from "Products/ProductsIndex";
+import AdminPage from "Admin/AdminPage";
 
 const AppStyles = css`
   margin: 50px auto;
@@ -26,10 +26,10 @@ const App = () => {
             <div className="Container">
                 <Nav />
                 <Routes>
-                    <Route path="/" element={ <Products /> }>
+                    <Route path="/" element={ <ProductsPage /> }>
                         <Route path="/" element={ <ProductsIndex />} />
                     </Route>
-                    <Route path="/admin" element={ <Admin /> } />
+                    <Route path="/admin" element={ <AdminPage /> } />
                     <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
             </div>

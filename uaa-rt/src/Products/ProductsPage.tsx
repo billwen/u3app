@@ -12,7 +12,7 @@ flex-direction: column;
 }
 `;
 
-const Products = () => {
+const ProductsPage = () => {
     return (
         <div className={ProductsStyles}>
             <img src={process.env.PUBLIC_URL + '/assets/img/logo.svg'} alt="Ultimate Burgers" className="Logo"/>
@@ -21,4 +21,4 @@ const Products = () => {
     );
 }
 
-export default Products;
+export default ProductsPage;
