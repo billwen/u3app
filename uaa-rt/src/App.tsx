@@ -5,9 +5,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate} from 'react-router-do
 
 import Nav from "Common/Nav";
 import ProductsPage from "Products/ProductsPage";
-import ProductsIndex from "Products/ProductsIndex";
 import AdminPage from "Admin/AdminPage";
-import ProductDetailPage from "Products/ProductDetailPage";
 
 const AppStyles = css`
   margin: 50px auto;
@@ -27,12 +25,9 @@ const App = () => {
             <div className="Container">
                 <Nav />
                 <Routes>
-                    <Route path="/" element={ <ProductsPage /> }>
-                        <Route path="/" element={ <ProductsIndex />} />
-                        <Route path=":id" element={ <ProductDetailPage />} />
-                    </Route>
+                    <Route path="/products*" element={ <ProductsPage /> } />
                     <Route path="/admin" element={ <AdminPage /> } />
-                    <Route path="*" element={<Navigate to="/" />} />
+                    <Route path="*" element={<Navigate to="/products" />} />
                 </Routes>
             </div>
         </Router>
