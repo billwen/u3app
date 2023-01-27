@@ -47,7 +47,7 @@ const ProductDetailPage = () => {
                 setProduct(product);
             } catch (e) {
                 console.warn(e);
-                navigate('/');
+                navigate('/', { replace: true, state: { id }});
             }
 
         })(id ?? "");

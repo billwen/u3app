@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from "react";
 import {listProducts, Product} from "./ProductsService";
 import ProductCard from "./ProductCard";
+import {useLocation} from "react-router";
 
 const ProductsIndex = () => {
     const [products, setProducts] = useState<Product[]>([]);
+    const {state} = useLocation();
+    console.log(location);
+
+    useEffect(() => {
+        if (state) {
+            console.warn(`Nothing found for ${state.id ?? "no id"}`);
+        }
+    }, [location]);
 
     useEffect( () => {
         (async () => {
