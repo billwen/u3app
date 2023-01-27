@@ -6,13 +6,13 @@ import {useLocation} from "react-router";
 const ProductsIndex = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const {state} = useLocation();
-    console.log(location);
+    console.log(state);
 
     useEffect(() => {
         if (state) {
             console.warn(`Nothing found for ${state.id ?? "no id"}`);
         }
-    }, [location]);
+    }, [state]);
 
     useEffect( () => {
         (async () => {
