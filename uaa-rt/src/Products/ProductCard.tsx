@@ -1,6 +1,6 @@
 import React from "react";
 import {Link} from "react-router-dom";
-import {Product} from "./ProductsService";
+import {Product} from "Products/ProductsService";
 import { css } from "@emotion/css"
 
 export interface ProductCardProp {
@@ -43,7 +43,7 @@ const ProductCardStyle = css`
 
 const ProductCard = ({product}: ProductCardProp) => {
     return (
-        // Absoulte path
+        // Absolute path
         // <Link to={`/product/${product.id}`} className={ProductCardStyle}>
         <Link to={product.id} className={ProductCardStyle}>
             <img src={process.env.PUBLIC_URL + '/assets/img/products/' + product.id + '.svg'} alt={product.name} className="ProductCard-Icon" />

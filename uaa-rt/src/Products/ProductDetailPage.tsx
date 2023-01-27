@@ -1,0 +1,73 @@
+import React, {useEffect, useState} from "react";
+import {useParams} from "react-router";
+import {css} from "@emotion/css";
+import {Product, retrieveProduct} from "Products/ProductsService";
+
+const ProductStyle = css`
+    color: #fff;
+  background: #2a2c37;
+  border-radius: 6px;
+  padding: 15px;
+  
+  .Product {
+    &-Title {
+      display: flex;
+    }
+    
+    &-Name {
+      font-weight: 600;
+      font-size: 1.2rem;
+      margin: 0;
+    }
+    
+    &-Price {
+      color: #50fa7b;
+      font-weight: 600;
+      font-size: 1rem;
+      margin: 0;
+    }
+    
+    &-Icon {
+      width: 50px;
+      margin-right: 15px;
+    }
+  }
+`;
+
+const ProductDetailPage = () => {
+    const {id} = useParams();
+
+    const [product, setProduct] = useState<Product | null>(null);
+
+    useEffect( () => {
+        // Get request
+        (async (id: string) => {
+            const product = await retrieveProduct(id);
+            setProduct(product);
+        })(id ?? "");
+    }, [id]);
+
+    if (product === null) {
+        return <div>Loading {id} .... </div>
+    }
+
+    return (
+        <div className={ProductStyle}>
+            <div className="Product-Title">
+                <img src={`${process.env.PUBLIC_URL}/assets/img/products/${product.id}.svg`} alt={product.name} className="Product-Icon" />
+                <div>
+                    <h1 className="Product-Name">{product.name}</h1>
+                    <p className="Product-Price">{`$${product.price / 100}`}</p>
+                </div>
+            </div>
+
+            <div className="Product-Description">
+                <p>
+                    {product.description}
+                </p>
+            </div>
+        </div>
+    );
+}
+
+export default ProductDetailPage;

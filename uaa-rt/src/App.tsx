@@ -7,6 +7,7 @@ import Nav from "Common/Nav";
 import ProductsPage from "Products/ProductsPage";
 import ProductsIndex from "Products/ProductsIndex";
 import AdminPage from "Admin/AdminPage";
+import ProductDetailPage from "Products/ProductDetailPage";
 
 const AppStyles = css`
   margin: 50px auto;
@@ -28,6 +29,7 @@ const App = () => {
                 <Routes>
                     <Route path="/" element={ <ProductsPage /> }>
                         <Route path="/" element={ <ProductsIndex />} />
+                        <Route path=":id" element={ <ProductDetailPage />} />
                     </Route>
                     <Route path="/admin" element={ <AdminPage /> } />
                     <Route path="*" element={<Navigate to="/" />} />

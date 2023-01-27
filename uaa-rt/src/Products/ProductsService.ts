@@ -16,3 +16,12 @@ export const listProducts : () => Promise<Product[]> = async () => {
 
     throw new Error('Error while downloading data')
 };
+
+export const retrieveProduct: (id: string) => Promise<Product> = async (id) => {
+    const response = await fetch(`${api_base}/api/products/${id}`);
+    if (response.ok) {
+        return await response.json();
+    }
+
+    throw new Error("Error, while downloading details")
+}
