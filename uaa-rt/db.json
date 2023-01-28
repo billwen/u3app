@@ -25,12 +25,6 @@
       "price": 499
     },
     {
-      "id": "soulless-salad",
-      "name": "Soul-less Salad",
-      "description": "Just in case you're peckish.",
-      "price": 649
-    },
-    {
       "id": "cola-cola",
       "name": "Cola Cola",
       "description": "Get that sugar rush, pronto.",
@@ -47,6 +41,12 @@
       "name": "Wild Water",
       "description": "Spring water, wild and watery.",
       "price": 299
+    },
+    {
+      "id": "soulless-salad",
+      "name": "Soul-less Salad",
+      "description": "Just in case you're peckish.",
+      "price": 599
     }
   ]
 }

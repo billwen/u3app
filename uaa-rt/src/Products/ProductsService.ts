@@ -27,7 +27,7 @@ export const retrieveProduct = async (id: string) => {
 }
 
 export const createProduct = async (form: Product) => {
-    const response = await fetch(`/api/products`, {
+    const response = await fetch(`${api_base}/api/products`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

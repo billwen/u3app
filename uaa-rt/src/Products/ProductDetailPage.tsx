@@ -47,6 +47,12 @@ const ProductStyle = css`
   }
 `;
 
+/*{
+    "id": "soulless-salad",
+    "name": "Soul-less Salad",
+    "description": "Just in case you're peckish.",
+    "price": 649
+},*/
 const ProductDetailPage = () => {
     const {id} = useParams();
     const navigate = useNavigate();

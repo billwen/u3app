@@ -1,13 +1,48 @@
 import React, {useEffect, useState} from "react";
 import {css} from "@emotion/css";
 import {createProduct, Product} from "./ProductsService";
+import {useNavigate} from "react-router-dom";
 
 const ProductEditStyle = css`
-  display: flex;
+
   color: #fff;
   background: #2a2c37;
   border-radius: 6px;
   padding: 15px;
+  
+  .ProductEdit {
+    &-Input {
+      width: 100%;
+      border: 1px solid transparent;
+      color: #fff;
+      background: #1d1e26;
+      padding: 10px 15px;
+      margin-bottom: 5px;
+      border-radius: 6px;
+      outline: 0;
+      
+      &:focus {
+        border-color: #50fa7b;
+      }
+    }
+    
+    &-Textarea {
+      min-height: 80px;
+      resize: none;
+    }
+    
+    &-Button {
+      border: 2px solid #50fa7b;
+      color: #50fa7b;
+      background: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      outline: 0;
+      cursor: pointer;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+  }
 `;
 
 interface UpdateFieldParam {
@@ -16,13 +51,7 @@ interface UpdateFieldParam {
 }
 
 const ProductEdit = () => {
-    const emptyProduct: Product = {
-        id: "",
-        name: "",
-        description: "",
-        price: 0
-    }
-
+    const navigate = useNavigate();
     const [form, setForm] = useState<Product | null>(null);
 
     // Loading Item
@@ -53,7 +82,7 @@ const ProductEdit = () => {
 
         try {
             const created = await createProduct(form);
-
+            navigate(`/admin/${created.id}`);
         } catch (e) {
             console.warn(e);
         }
