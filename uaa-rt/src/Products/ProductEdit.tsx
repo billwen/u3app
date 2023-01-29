@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {css} from "@emotion/css";
-import {createProduct, Product} from "./ProductsService";
-import {useNavigate} from "react-router-dom";
+import {createProduct, deleteProduct, Product, retrieveProduct, updateProduct} from "./ProductsService";
+import {useNavigate, useParams} from "react-router-dom";
 
 const ProductEditStyle = css`
 
@@ -50,7 +50,12 @@ interface UpdateFieldParam {
     value: string | number | null;
 }
 
-const ProductEdit = () => {
+interface ProductEditProp {
+    isEdit: boolean;
+}
+
+const ProductEdit = ({isEdit}: ProductEditProp) => {
+    const {id} = useParams();
     const navigate = useNavigate();
     const [form, setForm] = useState<Product | null>(null);
 
@@ -62,7 +67,19 @@ const ProductEdit = () => {
             description: '',
             price: 0
         });
-    }, [])
+
+        (async () => {
+            try {
+                if (id) {
+                    const product: Product = await retrieveProduct(id);
+                    setForm(product);
+                }
+            } catch (e) {
+                console.warn(e);
+                navigate(`/admin`, {replace: true});
+            }
+        })();
+    }, [id])
 
     const updateField = ({name, value}: UpdateFieldParam) => {
         if (form === null) {
@@ -87,6 +104,38 @@ const ProductEdit = () => {
             console.warn(e);
         }
     }
+
+    const handleUpdate = async () => {
+        if (form === null) {
+            return;
+        }
+
+        try {
+            const created = await updateProduct(form);
+            alert(`Updated ${form.name}`);
+            navigate(`/admin`);
+        } catch (e) {
+            console.warn(e);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (form === null) {
+            return;
+        }
+
+        if (!window.confirm(`Really delete ${form.name}?`)) {
+            return;
+        }
+
+        try {
+            const created = await deleteProduct(form.id);
+            navigate(`/admin`);
+        } catch (e) {
+            console.warn(e);
+        }
+    };
+
     if (form === null) {
         return <div>Loading ...</div>;
     }
@@ -98,7 +147,9 @@ const ProductEdit = () => {
             <input type="text" name="price" placeholder="Price" className="ProductEdit-Input" onChange={ ({target}) => updateField({name: target.name, value: parseInt(target.value, 10)})} value={form.price} />
             <textarea name="description" placeholder="Description" className="ProductEdit-Input ProductEdit-Textarea" onChange={ ({target}) => updateField(target)} value={form.description}/>
 
-            <button type="button" className="ProductEdit-Button" onClick={handleCreate}>Create</button>
+            {!isEdit && (<button type="button" className="ProductEdit-Button" onClick={handleCreate}>Create</button>)}
+            {isEdit && (<button type="button" className="ProductEdit-Button" onClick={handleUpdate}>Update</button>)}
+            {isEdit && (<button type="button" className="ProductEdit-Button" onClick={handleDelete}>Delete</button>)}
         </form>
     );
 }

@@ -10,7 +10,7 @@
       "id": "the-wedge",
       "name": "The Wedge",
       "description": "tasty sandwich to max your tastebuds.",
-      "price": 699
+      "price": 799
     },
     {
       "id": "spice-dog",
@@ -23,12 +23,6 @@
       "name": "French Fries",
       "description": "That side you've been missing.",
       "price": 499
-    },
-    {
-      "id": "cola-cola",
-      "name": "Cola Cola",
-      "description": "Get that sugar rush, pronto.",
-      "price": 99
     },
     {
       "id": "big-slurp",
