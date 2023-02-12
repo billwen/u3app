@@ -39,3 +39,5 @@ build/
 .DS_Store
 
 output.txt
+
+node_modules/
