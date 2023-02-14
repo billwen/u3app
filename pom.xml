@@ -18,6 +18,7 @@
     <name>u3app</name>
     <description>慕课网 Spring Security 实战</description>
     <modules>
+        <module>react-hooks-in-action</module>
         <module>react-github</module>
         <module>react-piano</module>
         <module>trello-clone</module>
