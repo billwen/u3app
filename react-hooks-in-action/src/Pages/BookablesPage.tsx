@@ -1,5 +1,6 @@
 import React from "react";
 import {css} from "@emotion/css";
+import BookablesList from "../Components/BookablesList";
 
 const BookablesPageStyles = css`
   max-width: 70em;
@@ -10,7 +11,7 @@ const BookablesPageStyles = css`
 const BookablesPage = () => {
     return (
         <main className={BookablesPageStyles}>
-            <p>Bookables!</p>
+            <BookablesList />
         </main>
     );
 };

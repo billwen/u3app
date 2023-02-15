@@ -1,5 +1,5 @@
 import React from 'react';
-import {BrowserRouter as Router, Routes, Route, Link} from "react-router-dom";
+import {BrowserRouter as Router, Routes, Route, Link, Navigate} from "react-router-dom";
 
 import './App.css';
 import {FaCalendarAlt, FaDoorOpen, FaUsers} from "react-icons/fa";
@@ -44,6 +44,7 @@ function App() {
           <Route path="/bookings" element={<BookingsPage />} />
           <Route path="/bookables" element={<BookablesPage />} />
           <Route path="/users" element={<UsersPage />} />
+          <Route path="*" element={<Navigate to="/bookings" />} />
         </Routes>
       </div>
     </Router>
