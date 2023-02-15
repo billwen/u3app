@@ -1,9 +1,10 @@
 import React from "react";
+import UserList from "Components/UserList";
 
 const UsersPage = () => {
     return (
         <div>
-            Users
+            <UserList />
         </div>
     );
 };
