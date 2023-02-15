@@ -3,9 +3,9 @@ import UserList from "Components/UserList";
 
 const UsersPage = () => {
     return (
-        <div>
+        <main className="users-page">
             <UserList />
-        </div>
+        </main>
     );
 };
 

@@ -5,16 +5,34 @@ import {User} from "Types/domain";
 const {users} : {users: User[]} = db;
 
 const UserList = () => {
-    const [selectedUser, setSelectedUser] = useState(0);
+    const [selectedUserId, setSelectedUserId] = useState(0);
+    const selectedUser = users[selectedUserId];
+    console.log(selectedUser);
 
     return (
-        <ul className="user items-list-nav">
-            { users.map( (u, i) => (
-                <li key={u.id} className={ selectedUser === i ? "selected" : undefined } >
-                    <button className="btn" onClick={ () => setSelectedUser(i) }>{u.name}</button>
-                </li>
-            ))}
-        </ul>
+        <>
+            <ul className="items-list-nav">
+                { users.map( (u, i) => (
+                    <li key={u.id} className={ selectedUserId === i ? "selected" : undefined } >
+                        <button className="btn" onClick={ () => setSelectedUserId(i) }>{u.name}</button>
+                    </li>
+                ))}
+            </ul>
+
+            <div className="users-page">
+                <div className="item">
+                    <div className="item-header">
+                        <h2>{selectedUser.name}</h2>
+                    </div>
+
+                    <div className="item-details">
+                        <p>{ selectedUser.title }</p>
+                        <p>{selectedUser.notes}</p>
+                    </div>
+                </div>
+            </div>
+        </>
+
     );
 };
 
