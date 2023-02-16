@@ -14,3 +14,9 @@ export type User = {
     title: string;
     notes: string;
 };
+
+export type Week = {
+    date: Date;
+    start: Date;
+    end: Date;
+}

@@ -1,14 +1,23 @@
-import React, {useState} from "react";
-import db from "../db.json";
+import React, {useEffect, useState} from "react";
 import {User} from "Types/domain";
-
-const {users} : {users: User[]} = db;
+import Spinner from "Components/UI/Spinner";
 
 const UserList = () => {
+    const [users, setUsers] = useState<User[] | null>(null);
     const [selectedUserId, setSelectedUserId] = useState(0);
-    const selectedUser = users[selectedUserId];
-    console.log(selectedUser);
+    const selectedUser = users == null ? null : users[selectedUserId];
 
+    useEffect( () => {
+        fetch("http://localhost:3001/users")
+            .then(resp => resp.json())
+            .then(data => setUsers(data));
+    }, []);
+
+    if (users === null || selectedUser === null) {
+        return (
+            <Spinner />
+        );
+    }
     return (
         <>
             <ul className="items-list-nav">
