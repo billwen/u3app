@@ -28,6 +28,30 @@ export default function reducer(state: AppState, action: ActionType): AppState {
                 bookableIndex: (state.bookableIndex + 1) % count
             };
 
+        case "FETCH_BOOKABLES_ERROR":
+            return {
+                ...state,
+                isLoading: false,
+                error: action.payload
+            };
+
+        case "FETCH_BOOKABLES_REQUEST":
+            // Clear the bookables when requesting new data
+            return {
+                ...state,
+                isLoading: true,
+                error: null,
+                bookables: []
+            };
+
+        case "FETCH_BOOKABLES_SUCCESS":
+            // Pass the loaded bookables to the reducer via the payload
+            return {
+                ...state,
+                isLoading: false,
+                bookables: action.payload
+            };
+
         default:
             throw new Error("Invalid action type");
     }

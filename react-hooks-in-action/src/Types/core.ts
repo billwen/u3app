@@ -1,21 +1,22 @@
 import {Bookable} from "./domain";
-import db from "../db.json";
 
 export type AppState = {
     group: string;
     bookableIndex: number;
     showDetails: boolean;
-
     bookables: Bookable[];
-};
 
-const { bookables}: {bookables: Bookable[]} = db;
+    isLoading: boolean;
+    error: string | null;
+};
 
 export const initialAppState: AppState = {
   group: "Rooms",
   bookableIndex: 0,
   showDetails: true,
-  bookables: bookables
+  bookables: [],
+  isLoading: true,
+  error: null
 };
 
 export type ActionType =
@@ -29,4 +30,12 @@ export type ActionType =
     type: "TOGGLE_SHOW_DETAILS";
 } | {
     type: "NEXT_BOOKABLE";
+} | {
+    type: "FETCH_BOOKABLES_REQUEST";
+} | {
+    type: "FETCH_BOOKABLES_SUCCESS";
+    payload: Bookable[];
+} | {
+    type: "FETCH_BOOKABLES_ERROR";
+    payload: string;
 };

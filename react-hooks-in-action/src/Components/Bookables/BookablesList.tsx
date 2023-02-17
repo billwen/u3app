@@ -1,23 +1,51 @@
-import React, {ChangeEvent, useReducer} from "react";
+import React, {ChangeEvent, useEffect, useReducer, useState} from "react";
 import {FaArrowRight} from "react-icons/fa";
 import {Bookable} from "Types/domain";
 import {initialAppState} from "Types/core";
 import reducer from "./reducer";
-
-import db from "../../db.json";
-
-
-const { days, sessions} : { days: string[], sessions: string[]} = db;
+import getData from "utils/api";
+import Spinner from "Components/UI/Spinner";
 
 const BookablesList = () => {
 
+    const [days, setDays] = useState<string[] | null>(null);
+    const [sessions, setSessions] = useState<string[] | null>(null);
     const [state, dispatch] = useReducer(reducer, initialAppState);
-    const {group, bookableIndex, bookables, showDetails} = state;
+    const {group, bookableIndex, bookables, showDetails, isLoading, error} = state;
 
     const bookablesInGroup: Bookable[] = bookables.filter( b => b.group === group );
     const groups = [...new Set(bookables.map(b => b.group))];
-    const bookable = bookablesInGroup[bookableIndex];
+    const bookable = bookablesInGroup.length === 0 || bookableIndex >= bookablesInGroup.length ? null : bookablesInGroup[bookableIndex];
 
+    useEffect( () => {
+        // Dispatch an action for the start of the data fetching
+        dispatch({type: "FETCH_BOOKABLES_REQUEST"});
+
+        getData<Bookable[]>("http://localhost:3001/bookables")
+            .then(bookables => dispatch({
+                type: "FETCH_BOOKABLES_SUCCESS",
+                payload: bookables
+            }))
+            .catch(error => dispatch({
+                type: "FETCH_BOOKABLES_ERROR",
+                payload: error.message
+            }));
+
+        getData<string[]>("http://localhost:3001/days")
+            .then(days => setDays(days))
+            .catch(error => dispatch({
+                type: "FETCH_BOOKABLES_ERROR",
+                payload: error.message
+            }));
+
+        getData<string[]>("http://localhost:3001/sessions")
+            .then(sessions => setSessions(sessions))
+            .catch(error => dispatch({
+                type: "FETCH_BOOKABLES_ERROR",
+                payload: error.message
+            }));
+
+    }, []);
     function changeGroup(e: ChangeEvent<HTMLSelectElement>) {
         dispatch({
             type: "SET_GROUP",
@@ -44,6 +72,17 @@ const BookablesList = () => {
         });
     }
 
+    if (error) {
+        return (
+            <p>{error}</p>
+        );
+    }
+
+    if (isLoading) {
+        return (
+            <p><Spinner /> Loading bookables...</p>
+        );
+    }
     return (
         <>
             <div>
@@ -70,7 +109,7 @@ const BookablesList = () => {
                 </p>
             </div>
 
-            { bookable && (
+            { days && days.length !== 0 && sessions && sessions.length !== 0 && bookable && (
                 <div className="bookable-details">
                     <div className="item">
                         <div className="item-header">
