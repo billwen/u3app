@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useEffect, useReducer, useState} from "react";
+import React, {ChangeEvent, useEffect, useReducer, useRef, useState} from "react";
 import {FaArrowRight} from "react-icons/fa";
 import {Bookable} from "Types/domain";
 import {initialAppState} from "Types/core";
@@ -16,6 +16,10 @@ const BookablesList = () => {
     const bookablesInGroup: Bookable[] = bookables.filter( b => b.group === group );
     const groups = [...new Set(bookables.map(b => b.group))];
     const bookable = bookablesInGroup.length === 0 || bookableIndex >= bookablesInGroup.length ? null : bookablesInGroup[bookableIndex];
+
+    const timerRef = useRef<number | undefined>(undefined);
+    // Call useRef and assign the ref to the nextButtonRef variable
+    const nextButtonRef = useRef<HTMLButtonElement>(null);
 
     useEffect( () => {
         // Dispatch an action for the start of the data fetching
@@ -46,6 +50,21 @@ const BookablesList = () => {
             }));
 
     }, []);
+
+    useEffect( () => {
+        timerRef.current = window.setInterval( () => {
+            dispatch({ type: "NEXT_BOOKABLE"});
+        }, 3000);
+
+        return stopPresentation;
+    }, []);
+
+    function stopPresentation() {
+        if (timerRef.current) {
+            window.clearInterval(timerRef.current);
+        }
+    }
+
     function changeGroup(e: ChangeEvent<HTMLSelectElement>) {
         dispatch({
             type: "SET_GROUP",
@@ -58,6 +77,7 @@ const BookablesList = () => {
             type: "SET_BOOKABLE",
             payload: selectedIndex
         });
+        nextButtonRef.current?.focus();
     }
 
     function nextBookable() {
@@ -102,7 +122,7 @@ const BookablesList = () => {
                 </ul>
 
                 <p>
-                    <button className="btn" onClick={nextBookable} autoFocus>
+                    <button className="btn" onClick={nextBookable} ref={nextButtonRef} autoFocus>
                         <FaArrowRight />
                         <span>Next</span>
                     </button>
@@ -119,6 +139,9 @@ const BookablesList = () => {
                                     <input type="checkbox" checked={showDetails} onChange={ () => toggleDetails() } />
                                     Show Details
                                 </label>
+                                <button className="btn" onClick={stopPresentation}>
+                                    Stop
+                                </button>
                             </span>
                         </div>
                         <p>{bookable.notes}</p>
@@ -141,8 +164,6 @@ const BookablesList = () => {
                 </div>
             ) }
         </>
-
-
     );
 };
 
